@@ -6,6 +6,7 @@ interface ITodo {
   id: number;
   task: string;
   completed: boolean;
+  isCompleted?: boolean;
 }
 
 const TodoList: React.FC = () => {
@@ -33,6 +34,19 @@ const TodoList: React.FC = () => {
     localStorage.setItem('todos', JSON.stringify([...todos, newTodo]));
   };
 
+  const handleToggleComplete = (todoIndex: number) => {
+    const updatedTodos = todos.map((todo, index) => {
+      if (index === todoIndex) {
+        return {...todo, isCompleted:!todo.isCompleted };
+      }
+      return todo;
+    });
+    setTodos(updatedTodos);
+    localStorage.setItem('todos', JSON.stringify(updatedTodos));
+  };
+  
+  
+
   const handleDeleteTodo = (todoIndex: number) => {
     const updatedTodos = todos.filter((_, index) => index!== todoIndex);
     setTodos(updatedTodos);
@@ -53,13 +67,19 @@ const TodoList: React.FC = () => {
           />
           <Button kind="primary" onClick={handleAddTodo}>Dodaj</Button>
           <ul className="bx--list-box__menu bx--list-box__menu--scrollable">
-            {todos.map((todo, index) => (
-              <li key={todo.id} className={`bx--list-box__menu-item ${todo.completed? 'completed' : ''}`}>
-                {todo.task}
+          {todos.map((todo, index) => (
+            <li key={todo.id} className={`bx--list-box__menu-item ${todo.isCompleted? 'completed' : ''}`}>
+                <span style={{ color: todo.isCompleted? 'green' : 'black' }}>{todo.task}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
                 <Button kind="ghost" onClick={() => handleDeleteTodo(index)}>Izbriši</Button>
-              </li>
+                <Button kind="ghost" onClick={() => handleToggleComplete(index)} style={{ display: todo.isCompleted? 'none' : 'initial' }}>Dokončano</Button>
+                </div>
+            </li>
             ))}
-          </ul>
+
+
+        </ul>
+
         </div>
       </div>
     </div>
